@@ -15,14 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.elasticjob.error.handler.impl;
+package org.apache.shardingsphere.elasticjob.error.handler;
 
+import org.apache.shardingsphere.elasticjob.error.handler.fixture.LogJobErrorHandler;
+import org.apache.shardingsphere.elasticjob.infra.exception.JobConfigurationException;
 import org.junit.Test;
 
-public final class IgnoreJobErrorHandlerTest {
-    
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class JobErrorHandlerFactoryTest {
+
     @Test
-    public void assertHandleException() {
-        new IgnoreJobErrorHandler().handleException("test_job", new RuntimeException("test"));
+    public void assertGetDefaultHandler() {
+        assertThat(JobErrorHandlerFactory.getHandler(""), instanceOf(LogJobErrorHandler.class));
+    }
+
+    @Test(expected = JobConfigurationException.class)
+    public void assertGetInvalidHandler() {
+        JobErrorHandlerFactory.getHandler("INVALID");
+    }
+
+    @Test
+    public void assertGetHandler() {
+        assertThat(JobErrorHandlerFactory.getHandler("LOG"), instanceOf(LogJobErrorHandler.class));
     }
 }
